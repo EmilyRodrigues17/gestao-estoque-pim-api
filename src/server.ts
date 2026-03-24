@@ -1,8 +1,7 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-
-dotenv.config();
+import 'dotenv/config';
+import { appDataSource } from "./database/appDataSource.js";
 
 const app = express();
 const PORT = process.env.PORT || 3333;
@@ -13,6 +12,14 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 })
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`)
+appDataSource.initialize()
+.then(() => {
+    console.log("Banco de dados conectado!");
+
+    app.listen(PORT, () => {
+        console.log(`Servidor rodando na porta ${PORT}`)
+    });
+})
+.catch((error) => {
+    console.log(error)
 })
