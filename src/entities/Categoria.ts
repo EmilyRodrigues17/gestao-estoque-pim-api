@@ -10,7 +10,7 @@ export class Categoria {
     nome!: string;
 
     @Column({ type: "varchar", nullable: true })
-    descricao?: string;
+    descricao?: string | null;
 
     @CreateDateColumn({nullable: false, type: "timestamptz"})
     created_at!: Date;

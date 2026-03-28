@@ -1,4 +1,5 @@
 import { appDataSource } from "../database/appDataSource.js";
+import type { CreateCategoriaSchemaDTO, UpdateCategoriaSchemaDTO } from "../dto/categoriaSchemaDTO.js";
 import { Categoria } from "../entities/Categoria.js";
 import { AppError } from "../errors/AppError.js";
 
@@ -15,19 +16,19 @@ export default class CategoriaService {
         });
 
         if (!categoriaExiste) {
-            throw new AppError(404, "Categoria não encontrada.")
+            throw new AppError("Categoria não encontrada.", 404)
         }
 
         return categoriaExiste
     }
 
-    public async create(data: Categoria): Promise<Categoria> {
+    public async create(data: CreateCategoriaSchemaDTO): Promise<Categoria> {
         const categoriaExiste = await this.categoriaRepository.findOne({
             where: {nome: data.nome}
         });
 
         if (categoriaExiste){
-            throw new AppError(400, "Categoria já cadastrada.")
+            throw new AppError("Categoria já cadastrada.", 409)
         }
 
         const novaCategoria = this.categoriaRepository.create(data);
@@ -36,7 +37,7 @@ export default class CategoriaService {
         return novaCategoria;
     };
 
-    public async update(id: string, data: Partial<Categoria>): Promise<Categoria> {
+    public async update(id: string, data: UpdateCategoriaSchemaDTO): Promise<Categoria> {
         const categoriaExiste = await this.getById(id);
 
         if (data.nome && data.nome !== categoriaExiste.nome) {
@@ -45,11 +46,15 @@ export default class CategoriaService {
             });
 
             if (categoriaComMesmoNome) {
-                throw new AppError(400, "Já existe uma categoria com esse nome.");
+                throw new AppError("Já existe uma categoria com esse nome.", 409);
             }
         }
 
-        const categoriaAtualizada = this.categoriaRepository.merge(categoriaExiste, data);
+        const dadosUpdate = Object.fromEntries(
+            Object.entries(data).filter(([,value]) => value !== undefined)
+        ) as Partial<Categoria>
+
+        const categoriaAtualizada = this.categoriaRepository.merge(categoriaExiste, dadosUpdate);
         await this.categoriaRepository.save(categoriaAtualizada);
 
         return categoriaAtualizada;
