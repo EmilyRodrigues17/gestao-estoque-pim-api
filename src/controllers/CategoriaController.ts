@@ -41,6 +41,6 @@ export default class CategoriaController {
 
         await this.categoriaService.delete(id as string);
 
-        res.status(204).json({message: "Categoria Deletada."})
+        res.status(204).send()
     };
 }
