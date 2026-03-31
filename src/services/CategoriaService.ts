@@ -1,10 +1,12 @@
 import { appDataSource } from "../database/appDataSource.js";
 import type { CreateCategoriaSchemaDTO, UpdateCategoriaSchemaDTO } from "../dto/categoriaSchemaDTO.js";
 import { Categoria } from "../entities/Categoria.js";
+import { Insumo } from "../entities/Insumo.js";
 import { AppError } from "../errors/AppError.js";
 
 export default class CategoriaService {
     private categoriaRepository = appDataSource.getRepository(Categoria);
+    private insumoRepository = appDataSource.getRepository(Insumo);
 
     public async findAll(): Promise<Categoria[]> {
         return this.categoriaRepository.find()
@@ -62,6 +64,14 @@ export default class CategoriaService {
 
     public async delete(id: string): Promise<void> {
         const categoriaExiste = await this.getById(id);
+
+        const insumoPorCategoria = await this.insumoRepository.findOne({
+            where: {categoria_id : categoriaExiste.id}
+        });
+
+        if (insumoPorCategoria){
+            throw new AppError("Categoria não pode ser excluida.", 409)
+        }
 
         await this.categoriaRepository.remove(categoriaExiste);
     };
