@@ -6,7 +6,7 @@ export const validateBody = (schema: ZodSchema): RequestHandler => {
     return (req, _res, next) => {
         const result = schema.safeParse(req.body);
         if (!result.success){
-            return next(new AppError("Dados invalidos", 400, result.error.flatten()))
+            return next(new AppError("Dados invalidos", 400, result.error.flatten((issue) => issue.message)))
         }
 
         req.body = result.data;
