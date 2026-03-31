@@ -14,7 +14,7 @@ export class Insumo {
     nome!: string;
 
     @Column({ type: "varchar", nullable: true})
-    descricao?: string;
+    descricao?: string | null;
 
     @Column({ type: "varchar", nullable: false})
     unidade_medida!: string;
@@ -26,12 +26,12 @@ export class Insumo {
     estoque_minimo!: number;
 
     @Column({ type: "numeric", nullable: true})
-    estoque_maximo?: number;
+    estoque_maximo?: number | null;
 
     @Column({ type: "varchar", nullable: true})
-    localizacao?: string;
+    localizacao?: string | null;
 
-    @Column({ type: "boolean", default: true, nullable: true})
+    @Column({ type: "boolean", default: true, nullable: false})
     ativo?: boolean;
 
     @CreateDateColumn({nullable: false, type: "timestamptz"})
@@ -40,9 +40,12 @@ export class Insumo {
     @UpdateDateColumn({nullable: false, type: "timestamptz"})
     updated_at!: Date;
 
+    @Column({ name: "categoria_id", type: "uuid" })
+    categoria_id!: string;
+
     @ManyToOne(() => Categoria, (categoria) => categoria.insumos)
     @JoinColumn({ name: "categoria_id"})
-    categoria_id!: Categoria
+    categoria!: Categoria
 
     @OneToMany(() => Movimentacao, (movimentacao) => movimentacao.insumo_id)
     movimentacoes!: Movimentacao[]
