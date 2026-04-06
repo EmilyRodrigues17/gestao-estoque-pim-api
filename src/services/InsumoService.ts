@@ -71,7 +71,7 @@ export default class InsumoService {
 
     public async update(id: string, data: UpdateInsumoSchemaDTO): Promise<Insumo> {
         const insumoExiste = await this.getById(id);
-        if (data.codigo && data.codigo !== insumoExiste.codigo){
+        if (data.codigo && data.codigo !== insumoExiste.codigo) {
             const insumoComMesmoCodigo = await this.insumoRepository.findOne({
                 where: { codigo: data.codigo }
             });
@@ -81,7 +81,7 @@ export default class InsumoService {
             }
         }
 
-        if (data.nome && data.nome !== insumoExiste.nome){
+        if (data.nome && data.nome !== insumoExiste.nome) {
             const insumoComMesmoNome = await this.insumoRepository.findOne({
                 where: { nome: data.nome }
             });
@@ -92,7 +92,7 @@ export default class InsumoService {
         }
 
         const dadosUpdate = Object.fromEntries(
-            Object.entries(data).filter(([,value]) => value !== undefined)
+            Object.entries(data).filter(([, value]) => value !== undefined)
         ) as Partial<Insumo>
 
         const insumoAtualizado = this.insumoRepository.merge(insumoExiste, dadosUpdate);

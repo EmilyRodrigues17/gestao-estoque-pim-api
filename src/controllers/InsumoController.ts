@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type InsumoService from "../services/InsumoService.js";
-import { createFilter, type InsumoQueryParams } from "../utils/createFilter.js";
+import { createFilter, type InsumoQueryParams } from "../utils/createFilterInsumo.js";
 import type { CreateInsumoSchemaDTO, UpdateInsumoSchemaDTO } from "../dto/insumoSchemaDTO.js";
 
 export default class InsumoController {

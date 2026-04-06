@@ -47,6 +47,6 @@ export class Insumo {
     @JoinColumn({ name: "categoria_id"})
     categoria!: Categoria
 
-    @OneToMany(() => Movimentacao, (movimentacao) => movimentacao.insumo_id)
+    @OneToMany(() => Movimentacao, (movimentacao) => movimentacao.insumo)
     movimentacoes!: Movimentacao[]
 }
