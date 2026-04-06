@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TipoMovimentacao } from "../types/tipoMovimentacao.js";
 import { MotivoMovimentacao } from "../types/motivoMovimentacao.js";
 import { Insumo } from "./Insumo.js";
@@ -21,19 +21,21 @@ export class Movimentacao {
     saldo_apos!: number;
 
     @Column({ type: "varchar", nullable: true})
-    linha_destino?: string;
+    linha_destino?: string | undefined;
 
     @Column({ type: "varchar", nullable: true})
-    observacao?: string;
+    observacao?: string | undefined;
 
     @Column({ type: "varchar", nullable: false })
     registrado_por!: string;
 
-    @Column({nullable: false, type: "timestamptz"})
+    @CreateDateColumn({nullable: false, type: "timestamptz"})
     timestamp!: Date;
+
+    @Column({ name: "insumo_id", type: "uuid" })
+    insumo_id!: string;
 
     @ManyToOne(() => Insumo, (insumo) => insumo.movimentacoes)
     @JoinColumn({ name: "insumo_id"})
-    insumo_id!: Insumo
-
+    insumo!: Insumo;
 }
