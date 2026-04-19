@@ -8,6 +8,7 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 const app = express();
 const PORT = process.env.PORT || 3333;
 
+app.use(cors());
 app.use(express.json());
 app.use('/api', indexRouter);
 app.use(errorHandler);
