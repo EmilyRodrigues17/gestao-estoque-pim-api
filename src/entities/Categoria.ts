@@ -18,6 +18,6 @@ export class Categoria {
     @UpdateDateColumn({nullable: false, type: "timestamptz"})
     updated_at!: Date;
 
-    @OneToMany(() => Insumo, (insumo) => insumo.categoria_id)
+    @OneToMany(() => Insumo, (insumo) => insumo.categoria)
     insumos!: Insumo[]
 }
