@@ -8,8 +8,20 @@ export default class CategoriaService {
     private categoriaRepository = appDataSource.getRepository(Categoria);
     private insumoRepository = appDataSource.getRepository(Insumo);
 
-    public async findAll(): Promise<Categoria[]> {
-        return this.categoriaRepository.find()
+    public async findAll(): Promise<any[]> {
+        const categorias = await this.categoriaRepository.find({
+            relations: ['insumos'],
+            order: { nome: 'ASC' },
+        });
+
+        return categorias.map(cat => ({
+            id: cat.id,
+            nome: cat.nome,
+            descricao: cat.descricao,
+            created_at: cat.created_at,
+            updated_at: cat.updated_at,
+            insumosVinculados: cat.insumos ? cat.insumos.length : 0,
+        }));
     };
 
     public async getById(id: string): Promise<Categoria> {
@@ -65,12 +77,15 @@ export default class CategoriaService {
     public async delete(id: string): Promise<void> {
         const categoriaExiste = await this.getById(id);
 
-        const insumoPorCategoria = await this.insumoRepository.findOne({
-            where: {categoria_id : categoriaExiste.id}
+        const insumosCountPorCategoria = await this.insumoRepository.count({
+            where: { categoria_id: categoriaExiste.id }
         });
 
-        if (insumoPorCategoria){
-            throw new AppError("Categoria não pode ser excluida.", 409)
+        if (insumosCountPorCategoria > 0){
+            throw new AppError(
+                `Esta categoria possui ${insumosCountPorCategoria} insumo(s) vinculado(s) e não pode ser excluída. Remova ou reatribua os insumos antes de excluir.`,
+                409
+            )
         }
 
         await this.categoriaRepository.remove(categoriaExiste);
