@@ -34,6 +34,9 @@ export class Insumo {
     @Column({ type: "boolean", default: true, nullable: false})
     ativo?: boolean;
 
+    @Column({ type: "varchar", default: 'critico', nullable: false})
+    status_estoque!: string;
+
     @CreateDateColumn({nullable: false, type: "timestamptz"})
     created_at!: Date;
     
