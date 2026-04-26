@@ -1,22 +1,25 @@
+import { Between, Raw } from "typeorm";
 import { appDataSource } from "../database/appDataSource.js";
 import { Insumo } from "../entities/Insumo.js";
 import { Movimentacao } from "../entities/Movimentacao.js";
+import type { DashboardData } from "../utils/dashboardTypes.js";
 
 export default class DashboardService {
     private insumoRepository = appDataSource.getRepository(Insumo);
     private movimentacaoRepository = appDataSource.getRepository(Movimentacao);
 
-    public async getDashboardData() {
-        const totalInsumosAbaixoMinimo = await this.insumoRepository
-            .createQueryBuilder("insumo")
-            .where("insumo.estoque_atual < insumo.estoque_minimo")
-            .andWhere("insumo.estoque_atual > 0")
-            .getCount();
+    public async getDashboardData(): Promise<DashboardData> {
+        const totalInsumosAbaixoMinimo = await this.insumoRepository.count({
+            where: {
+                estoque_atual: Raw((alias) => `${alias} < estoque_minimo AND ${alias} > 0`)
+            }
+        });
 
-        const totalInsumosZerados = await this.insumoRepository
-            .createQueryBuilder("insumo")
-            .where("insumo.estoque_atual = 0")
-            .getCount();
+        const totalInsumosZerados = await this.insumoRepository.count({
+            where: { 
+                estoque_atual: 0 
+            }
+        });
 
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
@@ -24,24 +27,22 @@ export default class DashboardService {
         const todayEnd = new Date();
         todayEnd.setHours(23, 59, 59, 999);
 
-        const movimentacoesHoje = await this.movimentacaoRepository
-            .createQueryBuilder("movimentacao")
-            .where("movimentacao.timestamp >= :start", { start: todayStart })
-            .andWhere("movimentacao.timestamp <= :end", { end: todayEnd })
-            .getCount();
+        const movimentacoesHoje = await this.movimentacaoRepository.count({
+            where: {
+                timestamp: Between(todayStart, todayEnd)
+            }
+        });
 
-        const { totalUnidades } = await this.insumoRepository
-            .createQueryBuilder("insumo")
-            .select("SUM(insumo.estoque_atual)", "totalUnidades")
-            .getRawOne();
+        const totalUnidades = await this.insumoRepository.sum("estoque_atual");
 
-        const insumosCriticos = await this.insumoRepository
-            .createQueryBuilder("insumo")
-            .leftJoinAndSelect("insumo.categoria", "categoria")
-            .where("insumo.estoque_atual <= insumo.estoque_minimo")
-            .getMany();
+        const insumosCriticos = await this.insumoRepository.find({
+            where: {
+                estoque_atual: Raw((alias) => `${alias} <= estoque_minimo`)
+            },
+            relations: { categoria: true }
+        });
 
-        const insumosCriticosFormatted = insumosCriticos.map(insumo => {
+        const insumosCriticosFormatted = insumosCriticos.map((insumo) => {
             const min = Number(insumo.estoque_minimo);
             const atual = Number(insumo.estoque_atual);
             let percentual = 0;
@@ -69,5 +70,6 @@ export default class DashboardService {
             totalUnidadesEstoque: Number(totalUnidades) || 0,
             insumosCriticos: insumosCriticosFormatted
         };
-    }
+    };
+
 }
