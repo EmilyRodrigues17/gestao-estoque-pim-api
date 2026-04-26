@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch src/**/*.ts --exec tsx src/server.ts",
-    "start": "ts-node src/server.ts"
+    "start": "ts-node src/server.ts",
+    "seed":  "npx tsx src/database/seed.ts"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "@types/cors": "^2.8.19",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
