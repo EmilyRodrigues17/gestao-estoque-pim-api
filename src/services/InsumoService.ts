@@ -29,7 +29,7 @@ export default class InsumoService {
     };
 
     
-    public async getInsumosByParam(filtros: FindOptionsWhere<Insumo>): Promise<Insumo[]> {
+    public async getInsumosByParam(filtros: FindOptionsWhere<Insumo> | FindOptionsWhere<Insumo>[]): Promise<Insumo[]> {
         const insumoExiste = this.insumoRepository.find({
             where: filtros,
             relations: { categoria: true }
