@@ -6,6 +6,7 @@ import type { CreateMovimentacaoSchemaDTO } from "../dto/movimentacaoSchemaDTO.j
 import { TipoMovimentacao } from "../types/tipoMovimentacao.js";
 import { MotivoMovimentacao } from "../types/motivoMovimentacao.js";
 import type { FindOptionsWhere } from "typeorm";
+import { calcularStatus } from "../utils/updateStatusEstoqueInsumo.js";
 
 export default class MovimentacaoService {
     private movimentacaoRepository = appDataSource.getRepository(Movimentacao);
@@ -13,7 +14,8 @@ export default class MovimentacaoService {
 
     public async findAll(): Promise<Movimentacao[]> {
         return this.movimentacaoRepository.find({ 
-            relations: { insumo: true }
+            relations: { insumo: true },
+            order: { timestamp: 'DESC'},
         })
     };
 
@@ -33,7 +35,8 @@ export default class MovimentacaoService {
     public async getMovimentacaoByParam(filtros: FindOptionsWhere<Movimentacao>): Promise<Movimentacao[]> {
         const movimentacaoExiste = this.movimentacaoRepository.find({
             where: filtros,
-            relations: { insumo: true }
+            relations: { insumo: true },
+            order: { timestamp: 'DESC'},
         });
 
         if ((await movimentacaoExiste).length == 0) {
@@ -94,6 +97,7 @@ export default class MovimentacaoService {
         }
 
         insumo.estoque_atual = qtdEstoque;
+        insumo.status_estoque = calcularStatus(insumo);
         try {
             await this.insumoRepository.save(insumo);
         } catch (error) {
