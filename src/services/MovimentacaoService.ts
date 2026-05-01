@@ -62,6 +62,14 @@ export default class MovimentacaoService {
         let qtdEstoque: number;
 
         if (data.tipo === "entrada") {
+            if (insumo.estoque_maximo !== null || insumo.estoque_maximo !== undefined){
+                const novaQuantidadeTotal = estoqueAtual + Number(data.quantidade);
+                if (novaQuantidadeTotal > insumo.estoque_maximo!) {
+                    throw new AppError("Quantidade excede o valor definido para estoque maximo", 422);
+                }
+                    
+            }
+
             qtdEstoque = estoqueAtual + Number(data.quantidade);
         } else if (data.tipo === "saida") {
             if (estoqueAtual === 0) {
