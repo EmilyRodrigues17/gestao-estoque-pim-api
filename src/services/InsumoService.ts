@@ -4,6 +4,7 @@ import { Categoria } from "../entities/Categoria.js";
 import { Insumo } from "../entities/Insumo.js";
 import { AppError } from "../errors/AppError.js";
 import type { CreateInsumoSchemaDTO, UpdateInsumoSchemaDTO } from "../dto/insumoSchemaDTO.js";
+import { calcularStatus } from "../utils/updateStatusEstoqueInsumo.js";
 
 export default class InsumoService {
     private insumoRepository = appDataSource.getRepository(Insumo);
@@ -11,7 +12,8 @@ export default class InsumoService {
 
     public async findAll(): Promise<Insumo[]> {
         return this.insumoRepository.find({ 
-            relations: { categoria: true }
+            relations: { categoria: true },
+            order: { updated_at: 'DESC'},
         })
     };
 
@@ -96,6 +98,11 @@ export default class InsumoService {
         ) as Partial<Insumo>
 
         const insumoAtualizado = this.insumoRepository.merge(insumoExiste, dadosUpdate);
+
+        if (data.estoque_maximo !== undefined) {
+            insumoAtualizado.status_estoque = calcularStatus(insumoAtualizado);
+        }
+
         await this.insumoRepository.save(insumoAtualizado);
 
         return insumoAtualizado;
