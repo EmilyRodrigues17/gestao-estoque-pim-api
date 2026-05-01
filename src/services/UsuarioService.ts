@@ -48,9 +48,13 @@ export class UsuarioService {
             }
         }
 
-        const dadosUpdate = Object.fromEntries(
-            Object.entries(data).filter(([, v]) => v !== undefined)
-        ) as Partial<Usuario>;
+        const dadosUpdate: Partial<Usuario> = Object.fromEntries(
+            Object.entries(data).filter(([k, v]) => v !== undefined && k !== 'senha')
+        );
+
+        if (data.senha) {
+            dadosUpdate.senha_hash = await hash(data.senha, 10);
+        }
 
         const usuarioAtualizado = this.usuarioRepository.merge(usuarioExiste, dadosUpdate);
         await this.usuarioRepository.save(usuarioAtualizado);

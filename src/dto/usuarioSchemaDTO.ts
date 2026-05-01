@@ -11,6 +11,7 @@ export const createUsuarioSchemaDTO = z.object({
 export const updateUsuarioSchemaDTO = z.object({
     nome: z.string().min(2).optional(),
     email: z.string().email("Email inválido").optional(),
+    senha: z.string().min(6, "Mínimo 6 caracteres").optional(),
     perfil_acesso: z.enum(PerfilAcesso).optional(),
     ativo: z.boolean().optional(),
 });
