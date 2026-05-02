@@ -27,6 +27,48 @@ Este projeto faz parte do módulo Full Stack do programa de capacitação do **I
   - Helmet e CORS para proteção de headers e acessos
   - Express Rate Limit para prevenção de ataques brute-force
 
+## 👥 Personas
+
+O sistema foi desenhado para atender dois perfis principais do Polo Industrial:
+
+*   **Almoxarife:** O usuário operacional que realiza o recebimento e a baixa de materiais. Precisa de agilidade no registro e precisão nos saldos para evitar paradas na linha.
+*   **Gestor de Produção:** O usuário estratégico que monitora a saúde do estoque. Utiliza o dashboard para antecipar compras e analisa o histórico para planejamento de demanda.
+
+## ✅ Requisitos Atendidos
+
+O projeto cumpre integralmente os requisitos definidos no PRD para a versão MVP:
+
+### Requisitos Funcionais (RF)
+
+| ID | Requisito | Prioridade | Status |
+|:---:|:---|:---:|:---:|
+| RF01 | Autenticar usuários por e-mail e senha, gerando token JWT. | Alta | ✅ Atendido |
+| RF02 | Middleware de segurança para proteger rotas da API. | Alta | ✅ Atendido |
+| RF03 | Registrar movimentações com tipo, motivo, quantidade e timestamp. | Alta | ✅ Atendido |
+| RF04 | Atualização de estoque_atual em transação SQL atômica. | Alta | ✅ Atendido |
+| RF05 | Bloquear saídas (erro 422) se quantidade > estoque_atual. | Alta | ✅ Atendido |
+| RF06 | Cálculo de saldo previsto no backend para validação. | Alta | ✅ Atendido |
+| RF07 | CRUD completo de insumos e categorias no banco de dados. | Alta | ✅ Atendido |
+| RF08 | Endpoint de dashboard com indicadores e alertas de estoque. | Alta | ✅ Atendido |
+| RF09 | Ordenação da lista de críticos por percentual de reposição. | Média | ✅ Atendido |
+| RF10 | Filtros de histórico por período, insumo, tipo e motivo. | Média | ✅ Atendido |
+| RF11 | Validação para impedir movimentação de insumos inativos. | Média | ✅ Atendido |
+| RF12 | Validação de observação obrigatória para motivos de ajuste/perda. | Média | ✅ Atendido |
+| RF13 | Cálculo de consumo médio mensal (trio). | Baixa | ⏳ Pendente |
+| RF14 | Fluxo de solicitação e aprovação de reposição (trio). | Baixa | ⏳ Pendente |
+
+### Requisitos Não Funcionais (RNF)
+
+| ID | Requisito | Prioridade | Status |
+|:---:|:---|:---:|:---:|
+| RNF01 | Garantia de atomicidade (transação SQL) em movimentações. | Alta | ✅ Atendido |
+| RNF02 | Hashing de senhas com Bcrypt (segurança de dados). | Alta | ✅ Atendido |
+| RNF03 | Exigência de token JWT válido em todas as rotas privadas. | Alta | ✅ Atendido |
+| RNF04 | Integridade: saldo atualizado apenas via movimentação. | Alta | ✅ Atendido |
+| RNF06 | Código documentado no GitHub com instruções de execução. | Média | ✅ Atendido |
+| RNF07 | Armazenamento de segredos em variáveis de ambiente (.env). | Alta | ✅ Atendido |
+| RNF08 | Tratamento padronizado de erros (401, 422, 500). | Média | ✅ Atendido |
+
 ## Funcionalidades Principais
 
 - **Autenticação Segura:** Login com JWT e controle de sessão.

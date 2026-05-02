@@ -13,7 +13,7 @@ export const createInsumoSchemaDTO = z.object({
 
 export const updateInsumoSchemaDTO = createInsumoSchemaDTO.omit({
     categoria_id: true,
-}).partial().strict()
+}).partial().extend({ ativo: z.boolean().optional() }).strict()
 
 export type CreateInsumoSchemaDTO = z.infer<typeof createInsumoSchemaDTO>
 export type UpdateInsumoSchemaDTO = z.infer<typeof updateInsumoSchemaDTO>
