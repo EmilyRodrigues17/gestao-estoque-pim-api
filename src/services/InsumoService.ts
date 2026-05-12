@@ -13,7 +13,7 @@ export default class InsumoService {
     public async findAll(): Promise<Insumo[]> {
         return this.insumoRepository.find({ 
             relations: { categoria: true },
-            order: { updated_at: 'DESC'},
+            order: { ativo: 'DESC', updated_at: 'DESC'},
         })
     };
 
@@ -34,7 +34,8 @@ export default class InsumoService {
     public async getInsumosByParam(filtros: FindOptionsWhere<Insumo> | FindOptionsWhere<Insumo>[]): Promise<Insumo[]> {
         const insumoExiste = this.insumoRepository.find({
             where: filtros,
-            relations: { categoria: true }
+            relations: { categoria: true },
+            order: {updated_at: 'DESC'}
         });
 
         if ((await insumoExiste).length == 0) {

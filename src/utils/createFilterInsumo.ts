@@ -6,6 +6,7 @@ export interface InsumoQueryParams {
     codigo?: string;
     categoriaId?: string;
     statusEstoque?: string;
+    insumoAtivo?: boolean
 }
 
 export function createFilter(dados: InsumoQueryParams): FindOptionsWhere<Insumo> |  FindOptionsWhere<Insumo>[] {
@@ -14,6 +15,7 @@ export function createFilter(dados: InsumoQueryParams): FindOptionsWhere<Insumo>
         const filtros: FindOptionsWhere<Insumo> = {};
         if (dados.categoriaId) filtros.categoria_id = dados.categoriaId;
         if (dados.statusEstoque) filtros.status_estoque = dados.statusEstoque;
+        if (dados.insumoAtivo) filtros.ativo = dados.insumoAtivo;
 
         return filtros;
     }
@@ -24,6 +26,7 @@ export function createFilter(dados: InsumoQueryParams): FindOptionsWhere<Insumo>
 
     if (dados.categoriaId) baseFiltros.categoria_id = dados.categoriaId;
     if (dados.statusEstoque) baseFiltros.status_estoque = dados.statusEstoque;
+    if (dados.insumoAtivo) baseFiltros.ativo = dados.insumoAtivo;
 
     if (dados.nome) {
         criterios.push({ ...baseFiltros, nome: ILike(`%${dados.nome}%`)});
