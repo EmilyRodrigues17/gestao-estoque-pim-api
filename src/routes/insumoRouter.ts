@@ -12,9 +12,9 @@ const insumoController = new InsumoController(insumoService);
 
 insumoRouter.get('/insumos', (req, res) => insumoController.getAllInsumos(req, res));
 insumoRouter.get('/insumos/:id', (req, res) => insumoController.getInsumoById(req, res));
-insumoRouter.post('/insumos', autorizar(PerfilAcesso.ALMOXARIFE), validateBody(createInsumoSchemaDTO), (req, res) => insumoController.addNewInsumo(req, res));
-insumoRouter.put('/insumos/:id', autorizar(PerfilAcesso.ALMOXARIFE), validateBody(updateInsumoSchemaDTO), (req, res) => insumoController.updateInsumo(req, res));
-insumoRouter.delete('/insumos/:id', autorizar(PerfilAcesso.ALMOXARIFE), (req, res) => insumoController.deleteInsumo(req, res));
+insumoRouter.post('/insumos', autorizar(PerfilAcesso.ALMOXARIFE, PerfilAcesso.GESTOR), validateBody(createInsumoSchemaDTO), (req, res) => insumoController.addNewInsumo(req, res));
+insumoRouter.put('/insumos/:id', autorizar(PerfilAcesso.ALMOXARIFE, PerfilAcesso.GESTOR), validateBody(updateInsumoSchemaDTO), (req, res) => insumoController.updateInsumo(req, res));
+insumoRouter.delete('/insumos/:id', autorizar(PerfilAcesso.GESTOR), (req, res) => insumoController.deleteInsumo(req, res));
 
 
 export default insumoRouter;
