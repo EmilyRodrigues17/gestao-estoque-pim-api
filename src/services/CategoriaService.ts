@@ -11,7 +11,7 @@ export default class CategoriaService {
     public async findAll(): Promise<any[]> {
         const categorias = await this.categoriaRepository.find({
             relations: ['insumos'],
-            order: { nome: 'ASC' },
+            order: { updated_at: 'DESC' },
         });
 
         return categorias.map(cat => ({
