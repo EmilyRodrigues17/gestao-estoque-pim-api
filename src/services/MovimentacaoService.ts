@@ -1,22 +1,25 @@
 import { appDataSource } from "../database/appDataSource.js";
 import { Insumo } from "../entities/Insumo.js";
 import { Movimentacao } from "../entities/Movimentacao.js";
+import { Usuario } from "../entities/Usuario.js";
 import { AppError } from "../errors/AppError.js";
 import type { CreateMovimentacaoSchemaDTO } from "../dto/movimentacaoSchemaDTO.js";
 import { TipoMovimentacao } from "../types/tipoMovimentacao.js";
 import { MotivoMovimentacao } from "../types/motivoMovimentacao.js";
-import type { FindOptionsWhere } from "typeorm";
+import { In, type FindOptionsWhere } from "typeorm";
 import { calcularStatus } from "../utils/updateStatusEstoqueInsumo.js";
 
 export default class MovimentacaoService {
     private movimentacaoRepository = appDataSource.getRepository(Movimentacao);
     private insumoRepository = appDataSource.getRepository(Insumo);
+    private usuarioRepository = appDataSource.getRepository(Usuario);
 
     public async findAll(): Promise<Movimentacao[]> {
-        return this.movimentacaoRepository.find({ 
+        const movimentacoes = await this.movimentacaoRepository.find({ 
             relations: { insumo: true },
             order: { timestamp: 'DESC'},
-        })
+        });
+        return this.enriquecerComUsuarios(movimentacoes);
     };
 
     public async getById(id: string): Promise<Movimentacao> {
@@ -29,22 +32,44 @@ export default class MovimentacaoService {
             throw new AppError("Movimentação não encontrada.", 404);
         }
 
-        return movimentacao;
+        const [enriquecida] = await this.enriquecerComUsuarios([movimentacao]);
+        return enriquecida!;
     };
 
     public async getMovimentacaoByParam(filtros: FindOptionsWhere<Movimentacao>): Promise<Movimentacao[]> {
-        const movimentacaoExiste = this.movimentacaoRepository.find({
+        const movimentacoes = await this.movimentacaoRepository.find({
             where: filtros,
             relations: { insumo: true },
             order: { timestamp: 'DESC'},
         });
 
-        if ((await movimentacaoExiste).length == 0) {
+        if (movimentacoes.length == 0) {
             throw new AppError("Movimentação não encontrada.", 404)
         }
 
-        return movimentacaoExiste
+        return this.enriquecerComUsuarios(movimentacoes);
     };
+
+    private async enriquecerComUsuarios(movimentacoes: Movimentacao[]): Promise<Movimentacao[]> {
+        if (movimentacoes.length === 0) return movimentacoes;
+
+        const userIds = [...new Set(movimentacoes.map(m => m.registrado_por).filter(Boolean))];
+        if (userIds.length === 0) return movimentacoes;
+
+        const usuarios = await this.usuarioRepository.find({
+            where: { id: In(userIds) }
+        });
+
+        const userMap = new Map<string, string>();
+        for (const u of usuarios) {
+            userMap.set(u.id, u.nome);
+        }
+
+        return movimentacoes.map(m => ({
+            ...m,
+            usuario: { nome: userMap.get(m.registrado_por) || "Usuário Desconhecido" }
+        })) as unknown as Movimentacao[];
+    }
 
     public async create(data: CreateMovimentacaoSchemaDTO): Promise<Movimentacao> {
 
