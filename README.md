@@ -1,4 +1,4 @@
-# EstoquePIM - API de Gestão de Estoque
+# PRISM - API de Gestão de Estoque
 
 [![Node.js Version](https://img.shields.io/badge/node-24.x-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)](https://www.typescriptlang.org/)
